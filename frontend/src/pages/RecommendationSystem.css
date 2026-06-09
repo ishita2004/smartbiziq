@@ -1,0 +1,202 @@
+/* Container and Card */
+.recommendation-container {
+  padding: 2.5rem;
+  min-height: calc(100vh - 75px);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.recommendation-card {
+  width: 100%;
+  max-width: 850px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  border-radius: 24px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.recommendation-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #f8d34d 0%, #ff9800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.recommendation-system-container .upload-box {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  word-break: break-word;
+}
+
+.recommendation-system-container .upload-box.active,
+.recommendation-system-container .upload-box:hover {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.recommendation-system-container .upload-box .upload-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.recommendation-system-container .upload-box h5 {
+  color: #fff !important;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.recommendation-system-container .upload-box p {
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+/* Form Inputs */
+.recommendation-system-container .inputText {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(15, 23, 42, 0.5);
+  color: #fff;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+.recommendation-system-container .inputText:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.18);
+  outline: none;
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+/* Button */
+.recommendation-system-container button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15);
+  margin-top: 1.5rem;
+}
+
+.recommendation-system-container button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
+}
+
+.recommendation-system-container button:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Results */
+.recommendation-system-container .results {
+  margin-top: 2rem;
+  background-color: rgba(15, 23, 42, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.recommendation-system-container .resultsHeader {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.recommendation-system-container .list {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.recommendation-system-container .listItem {
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+  color: #f3f4f6;
+  transition: all 0.2s ease;
+  list-style-type: none;
+  position: relative;
+  padding-left: 8px;
+}
+
+.recommendation-system-container .listItem::before {
+  content: "✦";
+  color: #007bff;
+  position: absolute;
+  left: -12px;
+}
+
+.recommendation-system-container .noResults {
+  margin-top: 1rem;
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+}
+
+.recommendation-system-container .error {
+  color: #f87171;
+  margin-top: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Form Group */
+.recommendation-system-container .formGroup {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.recommendation-system-container .label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recommendation-container {
+    padding: 1rem;
+  }
+  .recommendation-card {
+    padding: 1.5rem;
+  }
+  .recommendation-system-container button {
+    font-size: 0.95rem !important;
+    padding: 12px 20px !important;
+  }
+}

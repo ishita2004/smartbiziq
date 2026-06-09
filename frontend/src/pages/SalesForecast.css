@@ -1,0 +1,251 @@
+/* Container and Card */
+.sales-forecast-container {
+  padding: 2.5rem;
+  min-height: calc(100vh - 75px);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.sales-forecast-container .forecast-card {
+  width: 100%;
+  max-width: 950px;
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 24px !important;
+  padding: 2.5rem !important;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  color: #fff !important;
+}
+
+.sales-forecast-container .forecast-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #f8d34d 0%, #ff9800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.sales-forecast-container .forecast-subtitle {
+  text-align: center;
+  color: #94a3b8 !important;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Upload Box */
+.sales-forecast-container .upload-box {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  word-break: break-word;
+  margin-top: 1rem;
+}
+
+.sales-forecast-container .upload-box.active,
+.sales-forecast-container .upload-box:hover {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.sales-forecast-container .upload-box .upload-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.sales-forecast-container .upload-box h5 {
+  color: #fff !important;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.sales-forecast-container .upload-box p {
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.sales-forecast-container .upload-box small {
+  color: #94a3b8 !important;
+}
+
+/* Form Inputs and Selects */
+.sales-forecast-container select.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  color: #fff !important;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+.sales-forecast-container select.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.18);
+  outline: none;
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.sales-forecast-container .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8 !important;
+}
+
+/* Button styling */
+.sales-forecast-container button.btn-dark,
+.sales-forecast-container button.btn-primary,
+.sales-forecast-container button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
+}
+
+.sales-forecast-container button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
+}
+
+.sales-forecast-container button:disabled {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+/* Secondary Actions inside results card */
+.sales-forecast-container .forecast-data-card button.btn-outline-primary {
+  background: transparent !important;
+  border: 1px solid rgba(0, 123, 255, 0.4) !important;
+  color: #007bff !important;
+  box-shadow: none !important;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.sales-forecast-container .forecast-data-card button.btn-outline-primary:hover {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+/* Forecast Data Cards & Comparison Cards */
+.sales-forecast-container .forecast-data-card,
+.sales-forecast-container .forecast-compare-card {
+  background: rgba(15, 23, 42, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  margin-top: 1rem;
+  color: #fff !important;
+}
+
+.sales-forecast-container .forecast-compare-card {
+  min-height: 400px;
+  overflow-y: auto;
+}
+
+.sales-forecast-container .forecast-data-card h5,
+.sales-forecast-container .forecast-compare-card h5,
+.sales-forecast-container .forecast-compare-card h6 {
+  color: #fff !important;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.sales-forecast-container .forecast-data-card ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.sales-forecast-container .forecast-data-card li {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+}
+
+.sales-forecast-container .forecast-data-card li:last-child {
+  border-bottom: none;
+}
+
+/* Tables styling */
+.sales-forecast-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background-color: transparent !important;
+}
+
+.sales-forecast-container th,
+.sales-forecast-container td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f3f4f6 !important;
+}
+
+.sales-forecast-container thead th {
+  font-weight: 600;
+  color: #94a3b8 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.sales-forecast-container tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.sales-forecast-container .table-bordered {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.sales-forecast-container .table-bordered th,
+.sales-forecast-container .table-bordered td {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sales-forecast-container {
+    padding: 1rem;
+  }
+  .sales-forecast-container .forecast-card {
+    padding: 1.5rem !important;
+  }
+  .sales-forecast-container button {
+    font-size: 0.9rem !important;
+    padding: 10px 20px !important;
+  }
+}

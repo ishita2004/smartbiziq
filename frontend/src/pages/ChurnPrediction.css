@@ -1,0 +1,180 @@
+/* Container and Card */
+.churn-container {
+  padding: 2.5rem;
+  min-height: calc(100vh - 75px);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.churn-card {
+  width: 100%;
+  max-width: 950px;
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 24px !important;
+  padding: 2.5rem !important;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  color: #fff !important;
+}
+
+.churn-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #f8d34d 0%, #ff9800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.churn-subtitle {
+  text-align: center;
+  color: #94a3b8 !important;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Upload Box */
+.churn-container .upload-box {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  word-break: break-word;
+  margin-top: 1rem;
+}
+
+.churn-container .upload-box.active,
+.churn-container .upload-box:hover {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.churn-container .upload-box .upload-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.churn-container .upload-box h5 {
+  color: #fff !important;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.churn-container .upload-box p {
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.churn-container .upload-box small {
+  color: #94a3b8 !important;
+}
+
+/* Form Styling */
+.churn-container .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8 !important;
+}
+
+/* Button styling */
+.churn-container button.btn-dark,
+.churn-container button.btn-primary,
+.churn-container button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
+}
+
+.churn-container button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
+}
+
+.churn-container button:disabled {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+/* Section titles */
+.churn-container .churn-section-title {
+  color: #fff !important;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Table styling */
+.churn-container .table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.2);
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.churn-container table.churn-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.churn-container table.churn-table th,
+.churn-container table.churn-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f3f4f6 !important;
+}
+
+.churn-container table.churn-table thead th {
+  font-weight: 600;
+  color: #94a3b8 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.churn-container table.churn-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .churn-container {
+    padding: 1rem;
+  }
+  .churn-card {
+    padding: 1.5rem !important;
+  }
+  .churn-container button {
+    font-size: 0.9rem !important;
+    padding: 10px 20px !important;
+  }
+}

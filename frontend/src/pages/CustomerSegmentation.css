@@ -1,0 +1,257 @@
+/* Container and Card */
+.segmentation-container {
+  padding: 2.5rem;
+  min-height: calc(100vh - 75px);
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.segmentation-card {
+  width: 100%;
+  max-width: 950px;
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 24px !important;
+  padding: 2.5rem !important;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  color: #fff !important;
+}
+
+.segmentation-title {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(135deg, #f8d34d 0%, #ff9800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.segmentation-subtitle {
+  text-align: center;
+  color: #94a3b8 !important;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Upload Box */
+.segmentation-container .upload-box {
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  word-break: break-word;
+  margin-top: 1rem;
+}
+
+.segmentation-container .upload-box.active,
+.segmentation-container .upload-box:hover {
+  border-color: #007bff;
+  background-color: rgba(0, 123, 255, 0.05);
+  transform: translateY(-1px);
+}
+
+.segmentation-container .upload-box .upload-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #007bff;
+}
+
+.segmentation-container .upload-box h5 {
+  color: #fff !important;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.segmentation-container .upload-box p {
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.segmentation-container .upload-box small {
+  color: #94a3b8 !important;
+}
+
+/* Form Inputs and Selects */
+.segmentation-container select.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  color: #fff !important;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+.segmentation-container select.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.18);
+  outline: none;
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.segmentation-container .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #94a3b8 !important;
+}
+
+/* Button styling */
+.segmentation-container button.btn-dark,
+.segmentation-container button.btn-primary,
+.segmentation-container button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  font-size: 0.95rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
+}
+
+.segmentation-container button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
+}
+
+.segmentation-container button:disabled {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+/* Secondary Actions button.btn-outline-primary */
+.segmentation-container button.btn-outline-primary {
+  background: transparent !important;
+  border: 1px solid rgba(0, 123, 255, 0.4) !important;
+  color: #007bff !important;
+  box-shadow: none !important;
+}
+
+.segmentation-container button.btn-outline-primary:hover {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+/* Segmentation Data Cards */
+.segmentation-container .segmentation-data-card {
+  background: rgba(15, 23, 42, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  margin-top: 1rem;
+  color: #fff !important;
+  height: 100%;
+}
+
+.segmentation-container .segmentation-data-card h5 {
+  color: #fff !important;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* List group style overrides */
+.segmentation-container .list-group-item {
+  background: transparent !important;
+  color: #f3f4f6 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  padding: 10px 0 !important;
+}
+
+.segmentation-container .list-group-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Accordion Styling */
+.segmentation-container .accordion {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.segmentation-container .accordion-item {
+  background: rgba(15, 23, 42, 0.3) !important;
+  color: #fff !important;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.segmentation-container .accordion-item:last-child {
+  border-bottom: none;
+}
+
+.segmentation-container .accordion-button {
+  background: rgba(15, 23, 42, 0.45) !important;
+  color: #f3f4f6 !important;
+  border: none;
+  box-shadow: none;
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+}
+
+.segmentation-container .accordion-button:not(.collapsed) {
+  color: #007bff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.segmentation-container .accordion-button::after {
+  filter: invert(1);
+}
+
+.segmentation-container .accordion-body {
+  background: rgba(15, 23, 42, 0.2) !important;
+  padding: 1.25rem;
+  color: #94a3b8 !important;
+}
+
+.segmentation-container .accordion-body p {
+  margin-bottom: 0.5rem;
+  color: #f3f4f6 !important;
+}
+
+.segmentation-container .accordion-body p strong {
+  color: #94a3b8 !important;
+}
+
+/* Plotly charts */
+.segmentation-container .js-plotly-plot {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .segmentation-container {
+    padding: 1rem;
+  }
+  .segmentation-card {
+    padding: 1.5rem !important;
+  }
+  .segmentation-container button {
+    font-size: 0.9rem !important;
+    padding: 10px 20px !important;
+  }
+}
