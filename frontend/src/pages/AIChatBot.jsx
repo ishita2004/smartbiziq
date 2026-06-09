@@ -6,9 +6,9 @@ import "./AIChatBot.css";
 
 // Auto-switch: Localhost for dev, Render for production
 const BASE_URL =
-  process.env.NODE_ENV === "production"
+  (process.env.NODE_ENV === "production"
     ? "https://smartbiziq-backend-clean-1.onrender.com"
-    : process.env.REACT_APP_BACKEND_URL;
+    : process.env.REACT_APP_BACKEND_URL)?.trim();
 
 const SUGGESTIONS = [
   "What are the key statistics of the loaded dataset?",
