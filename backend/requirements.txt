@@ -8,7 +8,6 @@ prophet
 statsmodels
 matplotlib
 seaborn
-tensorflow
 plotly
 SQLAlchemy
 setuptools
@@ -16,4 +15,4 @@ wheel
 python-dotenv
 google-generativeai
 pymysql
-psycopg2
+psycopg2-binary
