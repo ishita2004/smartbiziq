@@ -124,7 +124,8 @@
 /* Button styling */
 .anomaly-container button.btn-dark,
 .anomaly-container button.btn-primary,
-.anomaly-container button {
+.anomaly-container .btn-primary,
+.anomaly-container button:not(.btn-outline-primary) {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
   color: #fff !important;
   border: none !important;
@@ -137,7 +138,7 @@
   box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
 }
 
-.anomaly-container button:hover:not(:disabled) {
+.anomaly-container button:not(.btn-outline-primary):hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
 }
@@ -148,6 +149,28 @@
   box-shadow: none !important;
   cursor: not-allowed !important;
   opacity: 0.6;
+}
+
+/* Secondary Actions button.btn-outline-primary */
+.anomaly-container button.btn-outline-primary,
+.anomaly-container .btn-outline-primary {
+  background: transparent !important;
+  border: 1px solid rgba(0, 123, 255, 0.4) !important;
+  color: #007bff !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  font-size: 0.82rem !important;
+  padding: 6px 12px !important;
+  width: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.anomaly-container button.btn-outline-primary:hover,
+.anomaly-container .btn-outline-primary:hover {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
 }
 
 /* Section titles */

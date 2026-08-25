@@ -23,3 +23,7 @@ backend-backup/__pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Database & Cache
+*.db
+.pytest_cache/

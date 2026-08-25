@@ -116,7 +116,8 @@
 /* Button styling */
 .sales-forecast-container button.btn-dark,
 .sales-forecast-container button.btn-primary,
-.sales-forecast-container button {
+.sales-forecast-container .btn-primary,
+.sales-forecast-container button:not(.btn-outline-primary) {
   background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
   color: #fff !important;
   border: none !important;
@@ -129,7 +130,7 @@
   box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
 }
 
-.sales-forecast-container button:hover:not(:disabled) {
+.sales-forecast-container button:not(.btn-outline-primary):hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
 }
@@ -142,16 +143,24 @@
   opacity: 0.6;
 }
 
-/* Secondary Actions inside results card */
+/* Secondary Actions inside results card and format banner */
+.sales-forecast-container button.btn-outline-primary,
+.sales-forecast-container .btn-outline-primary,
 .sales-forecast-container .forecast-data-card button.btn-outline-primary {
   background: transparent !important;
   border: 1px solid rgba(0, 123, 255, 0.4) !important;
   color: #007bff !important;
   box-shadow: none !important;
-  margin-top: 0.5rem;
-  margin-right: 0.5rem;
+  font-weight: 500 !important;
+  font-size: 0.82rem !important;
+  padding: 6px 12px !important;
+  width: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
+.sales-forecast-container button.btn-outline-primary:hover,
+.sales-forecast-container .btn-outline-primary:hover,
 .sales-forecast-container .forecast-data-card button.btn-outline-primary:hover {
   background: #007bff !important;
   color: #fff !important;

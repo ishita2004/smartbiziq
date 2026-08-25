@@ -146,6 +146,28 @@ const CustomerSegmentation = () => {
     pdf.save(`Customer_Segmentation_Report.pdf`);
   };
 
+  const handleDownloadSampleCSV = () => {
+    const csvContent = "Age,Annual_Income,Spending_Score\n" +
+      "19,15000,39\n" +
+      "21,15000,81\n" +
+      "20,16000,6\n" +
+      "23,16000,77\n" +
+      "31,17000,40\n" +
+      "22,17000,76\n" +
+      "35,18000,6\n" +
+      "23,18000,94\n" +
+      "64,19000,3\n" +
+      "30,19000,72\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "smartbiziq_segmentation_sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Container className="segmentation-container">
       <Card className="segmentation-card">
@@ -153,6 +175,23 @@ const CustomerSegmentation = () => {
         <p className="segmentation-subtitle">
           Upload your customer CSV data and segment them using KMeans or DBSCAN.
         </p>
+
+        {/* Accepted CSV Formats Info Block */}
+        <div className="csv-format-guide mb-4 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "14px" }}>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ fontSize: "1.1rem" }}>📋</span>
+              <strong style={{ color: "#60a5fa", fontSize: "0.95rem" }}>Accepted CSV Column Formats:</strong>
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <div>• <strong>Demographic Columns:</strong> <code>Age</code> (numeric age of customer)</div>
+              <div>• <strong>Financial & Metrics Columns:</strong> <code>Annual_Income</code> (or <code>income</code>), <code>Spending_Score</code> (or <code>score</code>, 1-100)</div>
+            </div>
+          </div>
+          <Button variant="outline-primary" size="sm" onClick={handleDownloadSampleCSV} style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            📥 Download Sample CSV
+          </Button>
+        </div>
 
         <Form className="mb-4">
           <Form.Group className="mb-3">

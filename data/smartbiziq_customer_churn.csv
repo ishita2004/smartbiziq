@@ -1,0 +1,11 @@
+id,name,tenure_months,monthly_charges,total_charges,support_tickets,contract_type
+CUST-101,Acme Corp,24,120.50,2892.00,1,Two Year
+CUST-102,Beta Logistics,3,145.00,435.00,5,Month-to-Month
+CUST-103,Gamma Solutions,48,65.00,3120.00,0,One Year
+CUST-104,Delta Traders,2,110.00,220.00,6,Month-to-Month
+CUST-105,Epsilon Global,18,85.00,1530.00,2,Month-to-Month
+CUST-106,Zeta Retail,1,130.00,130.00,4,Month-to-Month
+CUST-107,Eta Financial,36,55.00,1980.00,1,Two Year
+CUST-108,Theta Health,5,125.00,625.00,7,Month-to-Month
+CUST-109,Iota Tech,12,95.00,1140.00,2,One Year
+CUST-110,Kappa Media,2,140.00,280.00,8,Month-to-Month

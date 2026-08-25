@@ -54,6 +54,28 @@ const AnomalyDetection = () => {
     }
   };
 
+  const handleDownloadSampleCSV = () => {
+    const csvContent = "Feature1,Feature2\n" +
+      "10.5,20.2\n" +
+      "11.1,21.0\n" +
+      "10.8,20.5\n" +
+      "100.2,205.8\n" +
+      "10.2,20.1\n" +
+      "11.0,20.9\n" +
+      "9.9,19.8\n" +
+      "10.6,20.4\n" +
+      "500.0,999.0\n" +
+      "10.4,20.3\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "smartbiziq_anomaly_sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const scatterData = results.map(r => ({
     x: r.Feature1,
     y: r.Feature2,
@@ -67,6 +89,23 @@ const AnomalyDetection = () => {
         <p className="anomaly-subtitle">
           Upload a CSV file and select a detection method to identify unusual patterns or outliers.
         </p>
+
+        {/* Accepted CSV Formats Info Block */}
+        <div className="csv-format-guide mb-4 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "14px" }}>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ fontSize: "1.1rem" }}>📋</span>
+              <strong style={{ color: "#60a5fa", fontSize: "0.95rem" }}>Accepted CSV Column Formats:</strong>
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <div>• <strong>Primary Feature Column:</strong> <code>Feature1</code> (or numeric column 1, e.g. transaction amount, metric 1)</div>
+              <div>• <strong>Secondary Feature Column:</strong> <code>Feature2</code> (or numeric column 2, e.g. frequency, metric 2)</div>
+            </div>
+          </div>
+          <Button variant="outline-primary" size="sm" onClick={handleDownloadSampleCSV} style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            📥 Download Sample CSV
+          </Button>
+        </div>
 
         <Form className="mb-4">
           <Form.Group className="mb-3">

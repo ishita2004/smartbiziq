@@ -1,0 +1,9 @@
+transaction_id,customer_name,amount,transaction_date,region
+TX1001,John Doe,250.00,2024-01-05,North
+TX1002,Jane Smith,,2024-01-06,East
+TX1003,Bob Johnson,450.50,2024-01-07,South
+TX1001,John Doe,250.00,2024-01-05,North
+TX1004,Alice Brown,-50.00,2024-01-08,West
+TX1005,,1200.00,2024-01-09,
+TX1006,Charlie Davis,310.20,2024-01-10,East
+TX1006,Charlie Davis,310.20,2024-01-10,East

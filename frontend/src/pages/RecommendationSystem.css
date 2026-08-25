@@ -92,32 +92,56 @@
 }
 
 /* Button */
-.recommendation-system-container button {
-  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
+.recommendation-system-container button.btn-primary,
+.recommendation-system-container button.btn-dark,
+.recommendation-system-container button:not(.btn-outline-primary) {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
   width: 100%;
-  padding: 14px 24px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15);
+  padding: 14px 24px !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(0, 123, 255, 0.15) !important;
   margin-top: 1.5rem;
 }
 
-.recommendation-system-container button:hover:not(:disabled) {
+.recommendation-system-container button:not(.btn-outline-primary):hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3) !important;
 }
 
 .recommendation-system-container button:disabled {
-  background: rgba(255, 255, 255, 0.05);
-  color: #64748b;
-  box-shadow: none;
-  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
   opacity: 0.6;
+}
+
+/* Secondary Actions button.btn-outline-primary */
+.recommendation-system-container button.btn-outline-primary,
+.recommendation-system-container .btn-outline-primary {
+  background: transparent !important;
+  border: 1px solid rgba(0, 123, 255, 0.4) !important;
+  color: #007bff !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  font-size: 0.82rem !important;
+  padding: 6px 12px !important;
+  width: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.recommendation-system-container button.btn-outline-primary:hover,
+.recommendation-system-container .btn-outline-primary:hover {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
 }
 
 /* Results */

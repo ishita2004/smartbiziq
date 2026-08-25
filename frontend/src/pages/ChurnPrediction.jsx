@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import API from "./api"; // centralized Axios with REACT_APP_BACKEND_URL
-import { Container, Card, Form, Button, Alert, Spinner, OverlayTrigger, Tooltip as BootstrapTooltip } from "react-bootstrap";
+import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import "./ChurnPrediction.css";
@@ -24,6 +24,23 @@ const ChurnPrediction = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: ".csv" });
 
+  const handleDownloadSampleCSV = () => {
+    const csvContent = "id,name,tenure_months,monthly_charges,total_charges,support_tickets,contract_type\n" +
+      "CUST-101,Acme Corp,24,120.50,2892.00,1,Two Year\n" +
+      "CUST-102,Beta Logistics,3,145.00,435.00,5,Month-to-Month\n" +
+      "CUST-103,Gamma Solutions,48,65.00,3120.00,0,One Year\n" +
+      "CUST-104,Delta Traders,2,110.00,220.00,6,Month-to-Month\n" +
+      "CUST-105,Epsilon Global,18,85.00,1530.00,2,Month-to-Month\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "smartbiziq_churn_sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       alert("📂 Please upload a CSV file.");
@@ -36,13 +53,13 @@ const ChurnPrediction = () => {
     setLoading(true);
     try {
       // Use centralized API instance (reads backend URL from REACT_APP_BACKEND_URL)
-      const res = await API.post("/predict-churn", formData, {
+      const res = await API.post("/churn/predict-churn", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setResults(res.data.data || []);
       setError("");
     } catch (err) {
-      setError(err.response?.data?.error || "Prediction failed.");
+      setError(err.response?.data?.detail || err.response?.data?.error || err.message || "Prediction failed.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +76,26 @@ const ChurnPrediction = () => {
       <Card className="churn-card">
         <h2 className="churn-title">Customer Churn Prediction Dashboard</h2>
         <p className="churn-subtitle">
-          Upload your customer CSV file to predict churn probability.
+          Upload your customer CSV file to predict churn probability and retention risk.
         </p>
+
+        {/* Accepted CSV Formats Info Block */}
+        <div className="csv-format-guide mb-4 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "14px" }}>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ fontSize: "1.1rem" }}>📋</span>
+              <strong style={{ color: "#60a5fa", fontSize: "0.95rem" }}>Accepted CSV Column Formats:</strong>
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <div>• <strong>Customer Identification:</strong> <code>Customer</code>, <code>CustomerID</code>, <code>name</code>, or <code>id</code></div>
+              <div>• <strong>Customer Usage & Billing:</strong> <code>tenure_months</code> (or <code>Tenure</code>), <code>monthly_charges</code> (or <code>MonthlyCharges</code>), <code>total_charges</code> (or <code>TotalCharges</code>)</div>
+              <div>• <strong>Optional Metadata:</strong> <code>support_tickets</code>, <code>contract_type</code>, <code>Gender</code>, <code>Age</code></div>
+            </div>
+          </div>
+          <Button variant="outline-primary" size="sm" onClick={handleDownloadSampleCSV} style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            📥 Download Sample CSV
+          </Button>
+        </div>
 
         <Form className="mb-4">
           <div {...getRootProps()} className={`upload-box ${isDragActive ? "active" : ""}`}>
@@ -69,16 +104,6 @@ const ChurnPrediction = () => {
             <h5>Upload CSV File</h5>
             <p>Drag & drop or click to browse</p>
             {fileName && <small className="text-muted">Selected File: {fileName}</small>}
-
-            <small className="text-muted d-block mt-2">
-              <OverlayTrigger
-                placement="right"
-                overlay={<BootstrapTooltip>CSV must include these columns</BootstrapTooltip>}
-              >
-                <span style={{ cursor: "help", color: "#0d6efd" }}>ⓘ</span>
-              </OverlayTrigger>{" "}
-              Supported Columns: <strong>Customer / CustomerID, Gender, Age, Tenure, MonthlyCharges, TotalCharges</strong>
-            </small>
           </div>
 
           <Button variant="dark" className="mt-3" onClick={handleUpload} disabled={loading}>

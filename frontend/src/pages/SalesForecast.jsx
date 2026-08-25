@@ -78,19 +78,37 @@ const SalesForecast = () => {
       // Parse uploaded file for historical data
       const fileText = await file.text();
       const rows = fileText.trim().split("\n");
-      const headers = rows[0].split(",").map(h => h.trim().toLowerCase());
+      const headers = rows[0] ? rows[0].split(",").map(h => h.trim().toLowerCase()) : [];
       const dataRows = rows.slice(1);
 
-      const parsed = dataRows.map(row => {
-        const values = row.split(",");
-        const year = values[headers.indexOf("year")] || values[headers.indexOf("ds")];
-        const val = values[headers.indexOf("value")] || values[headers.indexOf("y")];
-        return { ds: year.trim(), yhat: parseFloat(val), type: "Historical" };
-      });
+      // Find date header index
+      const dateHeaderIdx = headers.findIndex(h => ["year", "date", "ds", "time", "timestamp"].includes(h));
+      const dateIdx = dateHeaderIdx !== -1 ? dateHeaderIdx : 0;
+
+      // Find value header index
+      const valHeaderIdx = headers.findIndex(h => ["value", "y", "sales", "revenue", "amount"].includes(h));
+      const valIdx = valHeaderIdx !== -1 ? valHeaderIdx : (headers.length > 1 ? 1 : 0);
+
+      const parsed = dataRows
+        .filter(row => row.trim().length > 0)
+        .map(row => {
+          const values = row.split(",").map(v => v.trim());
+          const rawDate = values[dateIdx] || "";
+          let yearStr = rawDate;
+          if (rawDate.includes("-") || rawDate.includes("/")) {
+            const parsedDate = new Date(rawDate);
+            if (!isNaN(parsedDate.getTime())) {
+              yearStr = parsedDate.getFullYear().toString();
+            }
+          }
+          const val = parseFloat(values[valIdx]) || 0;
+          return { ds: yearStr, yhat: val, type: "Historical" };
+        });
 
       setHistorical(parsed);
 
-      const lastHistoricalYear = Math.max(...parsed.map(p => parseInt(p.ds)));
+      const validYears = parsed.map(p => parseInt(p.ds)).filter(n => !isNaN(n));
+      const lastHistoricalYear = validYears.length > 0 ? Math.max(...validYears) : 0;
 
       // Forecasted values from backend
       const forecasted = res.data.forecast
@@ -101,7 +119,10 @@ const SalesForecast = () => {
           yhat: item.yhat,
           type: "Forecast"
         }))
-        .filter(f => parseInt(f.ds) > lastHistoricalYear);
+        .filter(f => {
+          const fYr = parseInt(f.ds);
+          return isNaN(fYr) || fYr > lastHistoricalYear;
+        });
 
       const fullResult = {
         model,
@@ -117,7 +138,7 @@ const SalesForecast = () => {
       setError("");
     } catch (err) {
       console.error("Upload failed:", err);
-      setError(err.response?.data?.error || "❌ Error processing the CSV file.");
+      setError(err.response?.data?.detail || err.response?.data?.error || err.message || "❌ Error processing the CSV file.");
     } finally {
       setLoading(false);
     }
@@ -132,6 +153,27 @@ const SalesForecast = () => {
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", `${model}_forecast.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadSampleCSV = () => {
+    const csvContent = "date,revenue,units_sold,marketing_spend\n" +
+      "2024-01-01,45000,450,5000\n" +
+      "2024-01-08,47200,470,5200\n" +
+      "2024-01-15,46800,465,5100\n" +
+      "2024-01-22,49000,490,5500\n" +
+      "2024-01-29,51000,510,5800\n" +
+      "2024-02-05,53200,530,6000\n" +
+      "2024-02-12,52500,520,5900\n" +
+      "2024-02-19,55000,550,6200\n" +
+      "2024-02-26,58000,575,6500\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "smartbiziq_sales_sample.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -161,9 +203,25 @@ const SalesForecast = () => {
       <Card className="forecast-card">
         <h2 className="forecast-title">📈 Sales Forecasting Dashboard</h2>
         <p className="forecast-subtitle">
-          Upload historical sales data and choose a model to predict future years.
-          Supported columns: <code>Year, Value</code> or <code>ds, y</code>.
+          Upload historical sales data and choose a forecasting model to predict future revenue & trend.
         </p>
+
+        {/* Accepted CSV Formats Info Block */}
+        <div className="csv-format-guide mb-4 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "14px" }}>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ fontSize: "1.1rem" }}>📋</span>
+              <strong style={{ color: "#60a5fa", fontSize: "0.95rem" }}>Accepted CSV Column Formats:</strong>
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <div>• <strong>Date Column:</strong> <code>date</code>, <code>ds</code>, <code>year</code>, <code>time</code>, or <code>timestamp</code> (e.g. <code>2024-01-01</code> or <code>2024</code>)</div>
+              <div>• <strong>Value Column:</strong> <code>revenue</code>, <code>sales</code>, <code>value</code>, <code>y</code>, or <code>amount</code> (numeric values)</div>
+            </div>
+          </div>
+          <Button variant="outline-primary" size="sm" onClick={handleDownloadSampleCSV} style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            📥 Download Sample CSV
+          </Button>
+        </div>
 
         <Form className="mb-4">
           <Form.Group className="mb-3">

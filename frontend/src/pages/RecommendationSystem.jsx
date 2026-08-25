@@ -55,10 +55,45 @@ const RecommendationSystem = () => {
 
   };
 
+  const handleDownloadSampleCSV = () => {
+    const csvContent = "customer_id,product_name,category,purchase_amount\n" +
+      "1,Wireless Headphones,Electronics,199.99\n" +
+      "1,Mechanical Keyboard,Electronics,129.50\n" +
+      "2,Espresso Coffee Beans,Grocery,24.99\n" +
+      "2,Stainless Steel Water Bottle,Home,19.95\n" +
+      "3,4K Ultra HD Monitor,Electronics,349.99\n" +
+      "3,Ergonomic Chair,Furniture,229.00\n";
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "smartbiziq_recommendations_sample.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="recommendation-container recommendation-system-container">
       <div className="recommendation-card">
         <h2 className="recommendation-title">🛍️ Smart Product Recommender</h2>
+
+        {/* Accepted CSV Formats Info Block */}
+        <div className="csv-format-guide mb-4 p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style={{ background: "rgba(15, 23, 42, 0.6)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: "14px", textAlign: "left" }}>
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span style={{ fontSize: "1.1rem" }}>📋</span>
+              <strong style={{ color: "#60a5fa", fontSize: "0.95rem" }}>Accepted CSV Column Formats:</strong>
+            </div>
+            <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <div>• <strong>Customer Identification:</strong> <code>customer_id</code>, <code>user_id</code>, or <code>CustomerID</code> (e.g. 1, 2, 3)</div>
+              <div>• <strong>Item & Purchase Details:</strong> <code>product_name</code> (or <code>item_id</code>), <code>category</code>, <code>purchase_amount</code> (or <code>rating</code>)</div>
+            </div>
+          </div>
+          <button className="btn btn-outline-primary btn-sm" type="button" onClick={handleDownloadSampleCSV} style={{ fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+            📥 Download Sample CSV
+          </button>
+        </div>
 
         {/* Upload CSV Box */}
         <div

@@ -1,0 +1,26 @@
+customer_id,product_name,category,purchase_amount
+1,Wireless Headphones,Electronics,199.99
+1,Mechanical Keyboard,Electronics,129.50
+1,USB-C Hub,Electronics,49.99
+1,Smart Watch,Electronics,249.00
+1,Bluetooth Speaker,Electronics,89.99
+2,Espresso Coffee Beans,Grocery,24.99
+2,Stainless Steel Water Bottle,Home,19.95
+2,Organic Green Tea,Grocery,15.99
+2,Yoga Mat,Sports,39.99
+2,Smoothie Blender,Home,79.99
+3,4K Ultra HD Monitor,Electronics,349.99
+3,Ergonomic Chair,Furniture,229.00
+3,Standing Desk,Furniture,499.00
+3,Laptop Stand,Electronics,59.99
+3,Webcam HD,Electronics,109.00
+4,Running Shoes,Sports,129.00
+4,Protein Powder,Grocery,49.99
+4,Gym Gloves,Sports,24.99
+4,Water Bottle,Sports,22.50
+4,Resistance Bands,Sports,19.99
+5,Novel - Bestseller,Books,18.99
+5,Coffee Mug,Home,12.99
+5,Desk Lamp,Home,34.99
+5,Notebook Set,Books,14.99
+5,Bookshelf Organizer,Home,44.99
