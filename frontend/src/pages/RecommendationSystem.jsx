@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import "./RecommendationSystem.css"; // Keep your existing CSS
 const BASE_URL = process.env.REACT_APP_BACKEND_URL || "https://smartbiziq-backend-clean-1.onrender.com";
 
@@ -37,22 +39,65 @@ const RecommendationSystem = () => {
     formData.append("expected_value", expectedValue); // NEW
 
     try {
-  const response = await axios.post(
-    `${BASE_URL}/upload_and_recommend`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
+      const response = await axios.post(
+        `${BASE_URL}/upload_and_recommend`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-  setRecommendations(response.data.recommendations || []);
-  setCluster(response.data.cluster);
-} catch (err) {
-  const detail =
-    err.response?.data?.detail || "🚨 Could not process recommendations.";
-  setErrorMsg(detail);
-} finally {
-  setLoading(false);
-}
+      setRecommendations(response.data.recommendations || []);
+      setCluster(response.data.cluster);
+    } catch (err) {
+      const detail =
+        err.response?.data?.detail || "🚨 Could not process recommendations.";
+      setErrorMsg(detail);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleDownloadPDF = () => {
+    try {
+      if (!recommendations.length) return;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, pageWidth, 24, "F");
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(15);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SmartBizIQ - Product Recommendation Report", 14, 11);
+
+      pdf.setFontSize(8.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(203, 213, 225);
+      const clusterText = clusterLabels[cluster] || `Cluster ${cluster ?? "-"}`;
+      pdf.text(`Customer ID: ${customerId} | Profile: ${clusterText.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '')} | Generated: ${new Date().toLocaleString()}`, 14, 18);
+
+      const tableData = recommendations.map((item, idx) => [
+        `#${idx + 1}`,
+        item,
+        "High Affinity",
+        "Personalized Match"
+      ]);
+
+      autoTable(pdf, {
+        startY: 32,
+        head: [["#", "Recommended Product / Item", "Confidence", "Recommendation Engine"]],
+        body: tableData,
+        margin: { left: 14, right: 14 },
+        theme: "striped",
+        headStyles: { fillColor: [30, 41, 59], textColor: 255 },
+        styles: { fontSize: 9, cellPadding: 3 }
+      });
+
+      pdf.save(`Recommendations_Customer_${customerId}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert(`❌ PDF Generation Error: ${err.message}`);
+    }
   };
 
   const handleDownloadSampleCSV = () => {
@@ -146,12 +191,22 @@ const RecommendationSystem = () => {
 
         {recommendations.length > 0 && (
           <div className="results">
-            <h3 className="resultsHeader">
-              🎯 Recommendations for <strong>{customerId}</strong>
-              <br />
-              Cluster:{" "}
-              <strong>{clusterLabels[cluster] ?? `Cluster ${cluster ?? "-"}`}</strong>
-            </h3>
+            <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+              <h3 className="resultsHeader mb-0">
+                🎯 Recommendations for <strong>{customerId}</strong>
+                <br />
+                Cluster:{" "}
+                <strong>{clusterLabels[cluster] ?? `Cluster ${cluster ?? "-"}`}</strong>
+              </h3>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                type="button"
+                onClick={handleDownloadPDF}
+                style={{ fontSize: "0.85rem", padding: "6px 14px" }}
+              >
+                📄 Download PDF Report
+              </button>
+            </div>
             <ul className="list">
               {recommendations.map((item, index) => (
                 <li key={index} className="listItem">

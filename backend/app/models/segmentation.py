@@ -8,7 +8,9 @@ def perform_customer_segmentation(df: pd.DataFrame, method: str = "kmeans") -> T
     """
     Segments customers using KMeans or DBSCAN clustering algorithm.
     Extracts or maps Age, Annual_Income, and Spending_Score columns.
-    Returns processed records with Cluster & Label and human-readable cluster summaries.
+    Calculates actual cluster centroids after clustering and dynamically assigns
+    business persona labels based on each cluster's actual computed mean relative
+    to overall dataset medians.
     """
     if df.empty:
         return [], {}
@@ -44,57 +46,68 @@ def perform_customer_segmentation(df: pd.DataFrame, method: str = "kmeans") -> T
         num_cols = list(df.select_dtypes(include=[np.number]).columns)
         score_col = num_cols[2] if len(num_cols) > 2 else (num_cols[-1] if num_cols else df.columns[0])
 
-    # Prepare feature matrix for clustering
-    features_df = pd.DataFrame()
-    features_df["Age"] = pd.to_numeric(df[age_col], errors="coerce").fillna(30).astype(int)
-    features_df["Annual_Income"] = pd.to_numeric(df[income_col], errors="coerce").fillna(50000).astype(float)
-    features_df["Spending_Score"] = pd.to_numeric(df[score_col], errors="coerce").fillna(50).astype(int)
+    # Clean numerical columns (handle strings with currency symbols or commas)
+    clean_age = pd.to_numeric(df[age_col].astype(str).str.replace(r"[^\d.]", "", regex=True), errors="coerce").fillna(30).astype(int)
+    clean_income = pd.to_numeric(df[income_col].astype(str).str.replace(r"[^\d.]", "", regex=True), errors="coerce").fillna(50000).astype(float)
+    clean_score = pd.to_numeric(df[score_col].astype(str).str.replace(r"[^\d.]", "", regex=True), errors="coerce").fillna(50).astype(int)
 
-    scaler = StandardScaler()
-    scaled_matrix = scaler.fit_transform(features_df[["Age", "Annual_Income", "Spending_Score"]])
+    features_df = pd.DataFrame({
+        "Age": clean_age,
+        "Annual_Income": clean_income,
+        "Spending_Score": clean_score
+    })
 
     n_samples = len(features_df)
+    scaler = StandardScaler()
+    scaled_matrix = scaler.fit_transform(features_df[["Annual_Income", "Spending_Score"]])
 
     if method.lower() == "dbscan":
-        # DBSCAN clustering
-        clustering = DBSCAN(eps=0.8, min_samples=min(2, n_samples))
+        # DBSCAN density-based clustering
+        clustering = DBSCAN(eps=0.8, min_samples=min(3, max(2, n_samples // 20)))
         labels = clustering.fit_predict(scaled_matrix)
     else:
-        # KMeans clustering
-        n_clusters = min(4, n_samples) if n_samples > 1 else 1
-        clustering = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        # KMeans clustering (default 5 clusters for standard customer segmentation grid, or min(5, n_samples))
+        n_clusters = min(5, n_samples) if n_samples > 1 else 1
+        clustering = KMeans(n_clusters=n_clusters, random_state=42, n_init=20)
         labels = clustering.fit_predict(scaled_matrix)
 
     features_df["Cluster"] = labels.tolist()
 
-    # Generate Cluster Labels & Summaries
+    # Calculate overall dataset medians for relative segment labeling
+    overall_median_income = features_df["Annual_Income"].median()
+    overall_median_score = features_df["Spending_Score"].median()
+
     cluster_summaries = {}
     label_map = {}
-
     unique_clusters = sorted(list(set(labels)))
 
     for c in unique_clusters:
         if c == -1:
             label_name = "Outliers / Unclustered"
-            summary_text = "Customers exhibiting unique behavioral patterns not fitting standard density clusters."
+            summary_text = "Customers with unique behavior not fitting standard density clusters."
         else:
             cluster_data = features_df[features_df["Cluster"] == c]
-            avg_income = cluster_data["Annual_Income"].mean()
-            avg_score = cluster_data["Spending_Score"].mean()
-            avg_age = cluster_data["Age"].mean()
+            avg_income = float(cluster_data["Annual_Income"].mean())
+            avg_score = float(cluster_data["Spending_Score"].mean())
+            avg_age = float(cluster_data["Age"].mean())
 
-            if avg_income >= 60000 and avg_score >= 60:
-                label_name = "High Spenders (Target Luxury Segment)"
-            elif avg_income >= 60000 and avg_score < 60:
-                label_name = "High Earners, Low Spenders (Careful)"
-            elif avg_income < 60000 and avg_score >= 60:
+            # Determine business persona dynamically from actual cluster centroids
+            is_high_income = avg_income >= overall_median_income
+            is_high_spending = avg_score >= overall_median_score
+
+            if is_high_income and is_high_spending:
+                label_name = "High Earners, High Spenders (Target Luxury)"
+            elif is_high_income and not is_high_spending:
+                label_name = "High Earners, Low Spenders (Careful / Savers)"
+            elif not is_high_income and is_high_spending:
                 label_name = "Low Earners, High Spenders (Trendsetters)"
             else:
-                label_name = "Budget Conscious / Low Engagement"
+                label_name = "Low Earners, Low Spenders (Budget Conscious)"
 
             summary_text = (
-                f"Cluster {c} ({label_name}): Avg Age ~{round(avg_age)}, "
-                f"Avg Income ${round(avg_income):,}, Avg Spending Score {round(avg_score)}/100."
+                f"Cluster {c} ({label_name}): Count={len(cluster_data)}, "
+                f"Avg Age ~{round(avg_age)}, Avg Income ${round(avg_income):,}, "
+                f"Avg Spending Score {round(avg_score, 1)}/100."
             )
 
         label_map[c] = label_name
@@ -103,12 +116,13 @@ def perform_customer_segmentation(df: pd.DataFrame, method: str = "kmeans") -> T
     results = []
     for idx, row in features_df.iterrows():
         c_val = int(row["Cluster"])
+        lbl = label_map.get(c_val, f"Cluster {c_val}")
         results.append({
             "Age": int(row["Age"]),
             "Annual_Income": float(row["Annual_Income"]),
             "Spending_Score": int(row["Spending_Score"]),
             "Cluster": c_val,
-            "Label": label_map.get(c_val, f"Cluster {c_val}")
+            "Label": f"Cluster {c_val} ({lbl})" if c_val != -1 else lbl
         })
 
     return results, cluster_summaries

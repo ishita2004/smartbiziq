@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import io
 
-from app.models.forecast import generate_ensemble_forecast, run_prophet_forecast, run_arima_forecast, run_linear_trend_forecast
+from app.models.forecast import run_all_forecasting_models
 from app.db.dataset_store import dataset_store
 from app.utils import cache
 
@@ -14,8 +14,8 @@ router = APIRouter(tags=["Forecasting"])
 
 class ForecastRequest(BaseModel):
     metric_id: Optional[str] = None
-    periods: int = 12
-    models: Optional[List[str]] = ["prophet", "arima", "lstm"]
+    periods: int = 5
+    models: Optional[List[str]] = ["prophet", "arima", "lstm", "gru"]
     confidence: float = 0.95
 
 @router.post("/forecasting")
@@ -31,51 +31,36 @@ async def forecast_upload(model: str = Query("prophet"), file: UploadFile = File
         
         # Identify date column and target value column
         cols = list(df_user.columns)
-        date_col = next((c for c in cols if c.lower() in ["year", "date", "ds", "time", "timestamp"]), cols[0])
+        date_col = next((c for c in cols if c.lower() in ["date", "ds", "year", "time", "timestamp"]), cols[0])
         num_cols = list(df_user.select_dtypes(include=[np.number]).columns)
-        val_col = next((c for c in num_cols if c.lower() in ["value", "y", "sales", "revenue", "amount"]), num_cols[0] if num_cols else cols[-1])
+        val_col = next((c for c in num_cols if c.lower() in ["revenue", "sales", "value", "y", "amount"]), num_cols[0] if num_cols else cols[-1])
 
         # Prepare ts dataframe
         try:
             ds_series = pd.to_datetime(df_user[date_col])
         except Exception:
-            ds_series = pd.date_range(end=datetime.today(), periods=len(df_user), freq='YE')
+            ds_series = pd.date_range(end=datetime.today(), periods=len(df_user), freq='W')
 
         y_vals = pd.to_numeric(df_user[val_col], errors='coerce').fillna(0)
         df_ts = pd.DataFrame({"ds": ds_series, "y": y_vals}).dropna().sort_values("ds")
 
-        if len(df_ts) < 2:
-            raise ValueError("Dataset needs at least 2 valid historical records.")
+        if len(df_ts) < 3:
+            raise ValueError("Dataset needs at least 3 historical data points for time-series forecasting.")
 
-        # Run model based on parameter
-        if model.lower() == "prophet":
-            res = run_prophet_forecast(df_ts, periods=5)
-        elif model.lower() == "arima":
-            res = run_arima_forecast(df_ts, periods=5)
-        else:
-            res = run_linear_trend_forecast(df_ts, periods=5)
-
-        # Convert forecast output format for frontend dashboard
-        forecast_list = []
-        last_year = df_ts["ds"].dt.year.max() if hasattr(df_ts["ds"].dt, "year") else 2024
-        
-        for idx, item in enumerate(res.get("forecast", [])):
-            year_val = str(last_year + idx + 1)
-            val = item.get("value", item.get("yhat", 0))
-            forecast_list.append({"ds": year_val, "yhat": round(float(val), 2)})
-
-        rmse = res.get("rmse", 14.2)
-        mape = res.get("mape", 2.1)
-        mae = round(rmse * 0.82, 2)
-        mse = round(rmse ** 2, 2)
+        # Run time-based holdout evaluation across all models with standardized dates
+        res = run_all_forecasting_models(df_ts, periods=5, target_model=model)
 
         return {
             "status": "success",
-            "model": model,
-            "forecast": forecast_list,
-            "metrics": {"MAE": mae, "MSE": mse, "RMSE": rmse},
-            "summary": f"Selected {model.upper()} model predicts positive sales momentum with RMSE of {rmse}.",
-            "bi_insights": "Forecast indicates steady upward baseline growth over upcoming operational periods."
+            "model": res["selected_model"],
+            "best_model": res["best_model"],
+            "best_model_name": res["best_model_name"],
+            "forecast": res["forecast"],
+            "metrics": res["metrics"],
+            "summary": res["summary"],
+            "bi_insights": res["bi_insights"],
+            "all_models": res["all_models"],
+            "test_period": res["test_period"]
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process forecasting CSV: {str(e)}")
@@ -102,7 +87,7 @@ def generate_forecast(req: ForecastRequest):
 
     target_col = req.metric_id if req.metric_id and req.metric_id in numeric_cols else numeric_cols[0]
 
-    cache_key = f"forecast_{dataset_store.filename}_{target_col}_{req.periods}"
+    cache_key = f"forecast_eval_{dataset_store.filename}_{target_col}_{req.periods}"
     cached = cache.get(cache_key)
     if cached:
         return cached
@@ -112,15 +97,33 @@ def generate_forecast(req: ForecastRequest):
     if date_cols:
         ds_series = pd.to_datetime(df_user[date_cols[0]])
     else:
-        ds_series = pd.date_range(end=datetime.today(), periods=len(df_user), freq='D')
+        ds_series = pd.date_range(end=datetime.today(), periods=len(df_user), freq='W')
 
     df_ts = pd.DataFrame({"ds": ds_series, "y": df_user[target_col].astype(float)}).dropna()
     df_ts = df_ts.sort_values("ds")
 
-    result = generate_ensemble_forecast(df_ts, periods=req.periods)
-    result["has_data"] = True
-    result["target_metric"] = target_col
-    result["available_metrics"] = numeric_cols
+    res = run_all_forecasting_models(df_ts, periods=req.periods, target_model="prophet")
+    
+    result = {
+        "status": "success",
+        "has_data": True,
+        "target_metric": target_col,
+        "available_metrics": numeric_cols,
+        "data": {
+            "forecast": res["forecast"],
+            "best_model": res["best_model_name"],
+            "model_comparison": {
+                m["model"]: {
+                    "rmse": m["metrics"]["RMSE"],
+                    "mae": m["metrics"]["MAE"],
+                    "mape": m["metrics"]["MAPE"],
+                    "is_best": m.get("is_best", False)
+                } for m in res["all_models"]
+            }
+        },
+        "summary": res["summary"],
+        "bi_insights": res["bi_insights"]
+    }
 
     cache.set(cache_key, result, ttl_seconds=300)
     return result
@@ -135,14 +138,28 @@ def compare_models(metric_id: Optional[str] = None):
         }
     numeric_cols = dataset_store.summary.get("numeric_columns", [])
     target = metric_id if metric_id in numeric_cols else (numeric_cols[0] if numeric_cols else "metric")
+    
+    df_user = dataset_store.df
+    date_cols = dataset_store.summary.get("date_columns", [])
+    ds_series = pd.to_datetime(df_user[date_cols[0]]) if date_cols else pd.date_range(end=datetime.today(), periods=len(df_user), freq='W')
+    df_ts = pd.DataFrame({"ds": ds_series, "y": df_user[target].astype(float)}).dropna().sort_values("ds")
+    
+    res = run_all_forecasting_models(df_ts, periods=5)
+    
+    models_dict = {}
+    for m in res["all_models"]:
+        models_dict[m["model"]] = {
+            "rmse": m["metrics"]["RMSE"],
+            "mae": m["metrics"]["MAE"],
+            "mape": m["metrics"]["MAPE"],
+            "recommended": m.get("is_best", False)
+        }
+        
     return {
         "has_data": True,
         "metric_id": target,
-        "models": {
-            "ensemble": {"rmse": 12.4, "mape": 1.5, "accuracy": "94.2%", "recommended": True},
-            "prophet": {"rmse": 14.1, "mape": 1.8, "accuracy": "92.6%", "recommended": False},
-            "arima": {"rmse": 18.2, "mape": 2.4, "accuracy": "90.1%", "recommended": False}
-        }
+        "best_model": res["best_model_name"],
+        "models": models_dict
     }
 
 @router.get("/{metric_id}/history")
@@ -161,4 +178,3 @@ def forecast_history(metric_id: str):
         return {"has_data": True, "metric_id": metric_id, "history": history}
     
     return {"has_data": False, "metric_id": metric_id, "history": []}
-

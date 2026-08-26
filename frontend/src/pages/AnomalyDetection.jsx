@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import API from './api'; // centralized Axios
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Container, Card, Form, Button, Alert, Spinner, OverlayTrigger, Tooltip as BootstrapTooltip } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -74,6 +76,46 @@ const AnomalyDetection = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadPDF = () => {
+    try {
+      if (!results.length) return;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, pageWidth, 24, "F");
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(15);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SmartBizIQ - Anomaly Detection Report", 14, 11);
+
+      pdf.setFontSize(8.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(203, 213, 225);
+      const totalAnomalies = results.filter(r => r.Anomaly === 1).length;
+      pdf.text(`Method: ${method.toUpperCase()} | Total Rows: ${results.length} | Anomalies: ${totalAnomalies} | Generated: ${new Date().toLocaleString()}`, 14, 18);
+
+      const headers = Object.keys(results[0]);
+      const body = results.slice(0, 40).map(r => Object.values(r));
+
+      autoTable(pdf, {
+        startY: 32,
+        head: [headers],
+        body: body,
+        margin: { left: 14, right: 14 },
+        theme: "striped",
+        headStyles: { fillColor: [30, 41, 59], textColor: 255 },
+        styles: { fontSize: 8.5, cellPadding: 2.5 }
+      });
+
+      pdf.save(`Anomaly_Detection_Report_${method}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert(`❌ PDF Generation Error: ${err.message}`);
+    }
   };
 
   const scatterData = results.map(r => ({
@@ -170,7 +212,12 @@ const AnomalyDetection = () => {
               </ResponsiveContainer>
             </div>
 
-            <h5 className="anomaly-section-title mt-4">📋 Detection Results</h5>
+            <div className="d-flex justify-content-between align-items-center mt-4 mb-2 flex-wrap gap-2">
+              <h5 className="anomaly-section-title mb-0">📋 Detection Results</h5>
+              <Button variant="outline-primary" size="sm" onClick={handleDownloadPDF}>
+                📄 Download PDF Report
+              </Button>
+            </div>
             <div className="table-container">
               <table className="anomaly-table">
                 <thead>

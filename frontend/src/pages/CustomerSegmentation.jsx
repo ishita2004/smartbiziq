@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import API from "./api"; // centralized Axios
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import Plot from "react-plotly.js";
 import { useDropzone } from "react-dropzone";
 import {
@@ -71,17 +71,20 @@ const CustomerSegmentation = () => {
         x: d.Annual_Income,
         y: d.Spending_Score,
         cluster: d.Cluster,
+        label: d.Label
       }));
 
       const clusters = [...new Set(plotPoints.map((p) => p.cluster))];
       const traces = clusters.map((c) => {
         const clusterPoints = plotPoints.filter((p) => p.cluster === c);
+        const rawLabel = clusterPoints[0]?.label || `Cluster ${c}`;
+        const cleanLabel = rawLabel.startsWith(`Cluster ${c}`) ? rawLabel : `Cluster ${c} (${rawLabel})`;
         return {
           x: clusterPoints.map((p) => p.x),
           y: clusterPoints.map((p) => p.y),
           mode: "markers",
           type: "scatter",
-          name: `Cluster ${c}`,
+          name: cleanLabel,
           marker: { size: 10 },
         };
       });
@@ -103,47 +106,80 @@ const CustomerSegmentation = () => {
       clusterGroups[r.Cluster].push(r);
     });
 
-    let report = "📊 Customer Segmentation Analysis\n\n";
+    let report = "Customer Segmentation Analysis\n\n";
     Object.entries(clusterGroups).forEach(([cluster, data]) => {
       const avgIncome = Math.round(data.reduce((sum, d) => sum + d.Annual_Income, 0) / data.length);
       const avgScore = Math.round(data.reduce((sum, d) => sum + d.Spending_Score, 0) / data.length);
-      report += `Cluster ${cluster}:\n- Total Customers: ${data.length}\n- Average Income: ₹${avgIncome}\n- Average Spending Score: ${avgScore}\n\n`;
+      report += `Cluster ${cluster}:\n- Total Customers: ${data.length}\n- Average Income: $${avgIncome.toLocaleString()}\n- Average Spending Score: ${avgScore}\n\n`;
     });
-    report += "💡 Insights:\n- Target high-spending clusters for premium campaigns.\n- Engage low-spending clusters to improve loyalty.\n";
+    report += "Insights:\n- Target high-spending clusters for premium campaigns.\n- Engage low-spending clusters to improve loyalty.\n";
     return report;
   };
 
   const handleDownloadFullReport = async () => {
-    if (!results.length) return;
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
+    try {
+      if (!results.length) {
+        alert("Please run segmentation first before downloading the PDF report.");
+        return;
+      }
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
 
-    pdf.setFontSize(16);
-    pdf.text("👥 Customer Segmentation Full Report", 14, 20);
-    pdf.setFontSize(12);
-    pdf.text(`Method: ${method.toUpperCase()}`, 14, 30);
-    pdf.text(`Total Customers: ${results.length}`, 14, 38);
+      // Top Header
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, pageWidth, 24, "F");
 
-    const fullAnalysis = generateFullAnalysis();
-    const lines = pdf.splitTextToSize(fullAnalysis, pageWidth - 28);
-    pdf.text(lines, 14, 50);
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(15);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SmartBizIQ - Customer Segmentation Report", 14, 11);
 
-    pdf.autoTable({
-      startY: 120,
-      head: [["Age", "Income", "Score", "Cluster", "Label"]],
-      body: results.slice(0, 10).map((r) => [
-        r.Age,
-        `₹${r.Annual_Income.toLocaleString()}`,
-        r.Spending_Score,
-        r.Cluster,
-        r.Label,
-      ]),
-      margin: { left: 14, right: 14 },
-      theme: "grid",
-      styles: { fontSize: 9 },
-    });
+      pdf.setFontSize(8.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(203, 213, 225);
+      pdf.text(`Algorithm: ${method.toUpperCase()} | Total Customers: ${results.length} | Generated: ${new Date().toLocaleString()}`, 14, 18);
 
-    pdf.save(`Customer_Segmentation_Report.pdf`);
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(11);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Cluster Summary & Insights", 14, 34);
+
+      const fullAnalysis = generateFullAnalysis();
+      const lines = pdf.splitTextToSize(fullAnalysis, pageWidth - 28);
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(71, 85, 105);
+      pdf.text(lines, 14, 42);
+
+      const analysisHeight = lines.length * 4.5;
+      const startTableY = Math.max(45 + analysisHeight, 85);
+
+      autoTable(pdf, {
+        startY: startTableY,
+        head: [["Age", "Annual Income", "Spending Score (1-100)", "Cluster", "Segment Persona"]],
+        body: results.slice(0, 20).map((r) => [
+          r.Age,
+          `$${r.Annual_Income.toLocaleString()}`,
+          r.Spending_Score,
+          `Cluster ${r.Cluster}`,
+          r.Label || "Standard",
+        ]),
+        margin: { left: 14, right: 14 },
+        theme: "striped",
+        headStyles: {
+          fillColor: [30, 41, 59],
+          textColor: 255,
+          fontSize: 8.5,
+          fontStyle: "bold"
+        },
+        styles: { fontSize: 8.5, cellPadding: 3 },
+      });
+
+      pdf.save(`Customer_Segmentation_Report.pdf`);
+    } catch (err) {
+      console.error("PDF download failed:", err);
+      alert(`❌ PDF Generation Error: ${err.message || "Unknown error"}`);
+    }
   };
 
   const handleDownloadSampleCSV = () => {

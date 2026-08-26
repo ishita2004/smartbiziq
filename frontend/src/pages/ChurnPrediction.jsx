@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from "react";
 import API from "./api"; // centralized Axios with REACT_APP_BACKEND_URL
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -23,6 +25,54 @@ const ChurnPrediction = () => {
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: ".csv" });
+
+  const handleDownloadPDF = () => {
+    try {
+      if (!results.length) return;
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, pageWidth, 24, "F");
+
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(15);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("SmartBizIQ - Customer Churn Risk Report", 14, 11);
+
+      pdf.setFontSize(8.5);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(203, 213, 225);
+      const highRisk = results.filter(r => r.ChurnProbability >= 50).length;
+      pdf.text(`Total Customers: ${results.length} | High Risk Churn: ${highRisk} | Generated: ${new Date().toLocaleString()}`, 14, 18);
+
+      const tableRows = results.map(r => [
+        r.Customer,
+        r.Gender === 0 ? "Female" : "Male",
+        r.Age,
+        r.Tenure,
+        `$${Number(r.MonthlyCharges).toFixed(2)}`,
+        `$${Number(r.TotalCharges).toFixed(2)}`,
+        `${r.ChurnProbability}%`,
+        r.ChurnProbability >= 50 ? "High Risk" : "Retained"
+      ]);
+
+      autoTable(pdf, {
+        startY: 32,
+        head: [["Customer", "Gender", "Age", "Tenure", "Monthly", "Total", "Churn %", "Risk Status"]],
+        body: tableRows,
+        margin: { left: 14, right: 14 },
+        theme: "striped",
+        headStyles: { fillColor: [30, 41, 59], textColor: 255 },
+        styles: { fontSize: 8.5, cellPadding: 2.5 }
+      });
+
+      pdf.save(`Churn_Prediction_Report.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert(`❌ PDF Generation Error: ${err.message}`);
+    }
+  };
 
   const handleDownloadSampleCSV = () => {
     const csvContent = "id,name,tenure_months,monthly_charges,total_charges,support_tickets,contract_type\n" +
@@ -139,7 +189,12 @@ const ChurnPrediction = () => {
               </ResponsiveContainer>
             </div>
 
-            <h5 className="churn-section-title mt-4">🔍 Prediction Details</h5>
+            <div className="d-flex justify-content-between align-items-center mt-4 mb-2 flex-wrap gap-2">
+              <h5 className="churn-section-title mb-0">🔍 Prediction Details</h5>
+              <Button variant="outline-primary" size="sm" onClick={handleDownloadPDF}>
+                📄 Download PDF Report
+              </Button>
+            </div>
             <div className="table-container">
               <table className="churn-table">
                 <thead>
